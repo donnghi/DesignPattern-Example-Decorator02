@@ -18,7 +18,10 @@ public :
     {
         cout << "~Core()" << endl;
     }
-    virtual void write(string &text) {}
+    virtual void write(string &text)
+    {
+        cout << "Core::write " << text << endl;
+    }
 };
 class Decorator : public Interface
 {
@@ -57,7 +60,7 @@ protected:
     string valediction;
 public:
     MessengerWithValediction() = default;
-    MessengerWithValediction(unique_ptr<Decorator> c, string txt) : Decorator(std::move(c)), valediction(txt) {}
+    MessengerWithValediction(unique_ptr<Interface> c, const string &txt) : Decorator(std::move(c)), valediction(txt) {}
     virtual ~MessengerWithValediction()
     {
         cout << "~MessengerWithValediction" << endl;
@@ -69,6 +72,29 @@ public:
     }
 };
 
+
 int main() {
+    string hello = "Hello baby, ";
+    string valediction = "Sincerly, Hehe";
+    string mess1 = "Message is not decorated";
+    string mess2 = "Message is decorated with Hello";
+    string mess3 = "Message is decorated with Valediction";
+    string mess4 = "Message is decorated with Hello and Valediction";
+
+    unique_ptr<Interface> messenger1 = make_unique<Core>();
+    unique_ptr<Interface> messenger2 = make_unique<MessengerWithDecorator>(make_unique<Core>(), hello);
+    unique_ptr<Interface> messenger3 = make_unique<MessengerWithValediction>(make_unique<Core>(), valediction);
+    unique_ptr<Interface> messenger4 = make_unique<MessengerWithValediction>(
+            make_unique<MessengerWithDecorator>(make_unique<Core>(), hello), valediction);
+
+    cout << "Message 1" << endl;
+    messenger1->write(mess1);
+    cout << "Message 2" << endl;
+    messenger2->write(mess2);
+    cout << "Message 3" << endl;
+    messenger3->write(mess3);
+    cout << "Message 4" << endl;
+    messenger4->write(mess4);
+
     return 0;
 }
